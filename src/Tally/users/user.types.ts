@@ -11,6 +11,7 @@ export interface User{
     subscriptionStatus: boolean, 
     createdAt: string,
     updatedAt: string | null
+    deletedAt: string | null
 }
 
 export type currencyCode = "USD" | "EUR" | "GBP" | "CAD" | "AUD" | "INR" | "PKR";

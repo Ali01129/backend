@@ -1,5 +1,6 @@
-import {IsString, IsNotEmpty, IsEmail, IsBoolean} from "class-validator";
+import {IsString, IsNotEmpty, IsEmail, IsBoolean, validate} from "class-validator";
 import { ApiProperty } from '@nestjs/swagger';
+
 
 export class CreateUserDto {
     @ApiProperty({example : "Bill Gill"})
@@ -8,6 +9,7 @@ export class CreateUserDto {
     readonly name!: string;
 
     @ApiProperty({example : "bill.gill@example.com"})
+    // @validate(IsUnique("email" , {message: "Email already exists"}))
     @IsEmail()
     @IsNotEmpty()
     readonly email!: string;
@@ -41,4 +43,5 @@ export class CreateUserDto {
     @IsBoolean()
     @IsNotEmpty()
     readonly verified!: boolean;
+    
 }

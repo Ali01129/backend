@@ -1,12 +1,13 @@
-import { Controller , Post , Body, HttpCode, HttpStatus, Get, Param } from "@nestjs/common";
+import { Controller , Post , Body, HttpCode, HttpStatus, Get, Param, Delete, Patch } from "@nestjs/common";
 import {CreateUserDto} from "./dto/create-user.dto"
 import { UserService } from "./users.service";
 import { User } from "./user.types";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { CreateUserResponseDto } from "./dto/create-user-response.dto";
+import { UpdateUserDto } from "./dto/update-user.dto";
 
 @ApiTags("Tally")
-@Controller("create/user")
+@Controller("/user")
 export class UserController{
     constructor(private readonly userService: UserService){}
 
@@ -33,7 +34,7 @@ export class UserController{
         return user;
     }
     
-    @Get()
+    @Get(":includeDeleted")
     @HttpCode(HttpStatus.OK)
     @ApiOperation({ summary: 'Get all users' })
     @ApiResponse({
@@ -46,8 +47,8 @@ export class UserController{
       description: 'Internal server error',
     })
 
-    async getAllUsers(): Promise<User[]>{
-        const users = await this.userService.getAllUsers();
+    async getAllUsers(@Param("includeDeleted") includeDeleted: boolean): Promise<User[]>{
+        const users = await this.userService.getAllUsers(includeDeleted);
         return users;
     }
 
@@ -71,5 +72,47 @@ export class UserController{
         const user = await this.userService.getUserById(id);
         return user;
     }
-    
+
+    @Delete(":id")
+    @HttpCode(HttpStatus.OK)
+    @ApiOperation({ summary: 'Delete user by ID' })
+    @ApiResponse({
+      status: 200,
+      description: 'User deleted successfully',
+    })
+    @ApiResponse({
+      status: 404,
+      description: 'User not found',
+    })
+    @ApiResponse({
+      status: 500,
+      description: 'Internal server error',
+    })
+    async deleteUserById(@Param("id") id: string): Promise<void>{
+        await this.userService.deleteUserById(id);
+        return;
+    }
+
+
+    @Patch(":id")
+    @HttpCode(HttpStatus.OK)
+    @ApiOperation({ summary: 'Update user by ID' })
+    @ApiResponse({
+      status: 200,
+      description: 'User updated successfully',
+      type: UpdateUserDto,
+    })
+    @ApiResponse({
+      status: 404,
+      description: 'User not found',
+    })
+    @ApiResponse({
+      status: 500,
+      description: 'Internal server error',
+    })
+    async updateUserInfo(@Param("id") id: string, @Body() updateUserDto: UpdateUserDto): Promise<User>{
+        console.log('id received:', id);
+        const upadtedUserData = await this.userService.updateUserById(id, updateUserDto);
+        return upadtedUserData;
+    }
 }
