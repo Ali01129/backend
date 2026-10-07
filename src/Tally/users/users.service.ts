@@ -70,7 +70,7 @@ export class UserService{
     async updateUserById(id: string, data: Partial<Pick<User, "name" | "email" | "displayName" | "handle" | "avatarColor" | "preferredCurrency" | "subscriptionStatus" | "verified" | "deletedAt" >>): Promise<User> {
 
         this.db.settings({ ignoreUndefinedProperties: true });
-        const userRef = await this.db.collection("users").doc(id); //reference 
+        const userRef = this.db.collection("users").doc(id); //reference  //
 
         const userDocument = await userRef.get();
 
