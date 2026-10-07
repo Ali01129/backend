@@ -17,10 +17,9 @@ async function bootstrap() {
 
   // Swagger configuration
   const config = new DocumentBuilder()
-    .setTitle('Recipt Backend API')
-    .setDescription('API documentation for Recipt Backend')
+    .setTitle('Tally API')
+    .setDescription('API documentation for Tally Backend')
     .setVersion('1.0')
-    .addTag('api')
     .build();
   
   const document = SwaggerModule.createDocument(app, config);
