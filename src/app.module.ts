@@ -10,6 +10,8 @@ import {FriendsController} from "./Tally/friends/friends.controller"
 import { FriendsService } from './Tally/friends/friends.service';
 import { GroupsService } from './Tally/groups/groups.service';
 import { GroupsController } from './Tally/groups/groups.controller';
+import { ExpenseController } from './Tally/expenses/expenses.controller';
+import { ExpenseService } from './Tally/expenses/expenses.service';
 
 @Module({
   imports: [
@@ -20,7 +22,7 @@ import { GroupsController } from './Tally/groups/groups.controller';
     EmailModule,
     FirebaseModule
   ],
-  controllers: [AppController, UserController, FriendsController, GroupsController ],
-  providers: [AppService, UserService, FriendsService, GroupsService],
+  controllers: [AppController, UserController, FriendsController, GroupsController, ExpenseController ],
+  providers: [AppService, UserService, FriendsService, GroupsService, ExpenseService],
 })
 export class AppModule {}
