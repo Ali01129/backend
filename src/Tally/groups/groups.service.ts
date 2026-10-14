@@ -26,7 +26,7 @@ export class GroupsService{
 
         const batch = await this.db.batch();
 
-        const groupAdminDoc = this.db.collection("groupMembers").doc(`${groupIdDoc.id}_${adminId}`);
+        const groupAdminDoc = this.db.collection("groupMembers").doc(`${adminId}_${groupIdDoc.id}`);
 
         const groupAdmin = this.groupMemberBuilder(groupIdDoc.id, adminId, "admin");
 
@@ -211,7 +211,7 @@ export class GroupsService{
     }
 
     async removeMember(groupId: string, adminId: string, memberId: string){
-        const groupAdminDoc = this.db.collection("groupMembers").doc(`${groupId}_${adminId}`);
+        const groupAdminDoc = this.db.collection("groupMembers").doc(`${adminId}_${groupId}`);
 
         const groupMemberDoc = this.db.collection("groupMembers").doc(`${memberId}_${groupId}`);
 
