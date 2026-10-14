@@ -12,6 +12,8 @@ import { GroupsService } from './Tally/groups/groups.service';
 import { GroupsController } from './Tally/groups/groups.controller';
 import { ExpenseController } from './Tally/expenses/expenses.controller';
 import { ExpenseService } from './Tally/expenses/expenses.service';
+import {SettlementService} from "./Tally/settlements/settlement.service";
+import {SettlementController} from "./Tally/settlements/settlement.controller";
 
 @Module({
   imports: [
@@ -22,7 +24,7 @@ import { ExpenseService } from './Tally/expenses/expenses.service';
     EmailModule,
     FirebaseModule
   ],
-  controllers: [AppController, UserController, FriendsController, GroupsController, ExpenseController ],
-  providers: [AppService, UserService, FriendsService, GroupsService, ExpenseService],
+  controllers: [AppController, UserController, FriendsController, GroupsController, ExpenseController,SettlementController ],
+  providers: [AppService, UserService, FriendsService, GroupsService, ExpenseService, SettlementService],
 })
 export class AppModule {}
