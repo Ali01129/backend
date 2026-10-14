@@ -201,7 +201,7 @@ export class GroupsController{
         @ApiParam({name: "groupId", example: "ytjkbcj"})
         @ApiParam({name: "memberId", example: "fvmkev"})
         @ApiParam({name: "adminId", example: "cjncke"})
-            @ApiOperation({ summary: "Leave a group" })
+            @ApiOperation({ summary: "Remove member from the group" })
             @ApiResponse({
                 status: 200,
                 description: 'Successfully removed from the group',
