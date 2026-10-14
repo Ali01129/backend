@@ -19,11 +19,14 @@ export type splitMethod = "equal" | "exact" | "percent" | "by-items";
 
 
 export interface ExpenseShare{
+    id: string;
     expenseId: string;
     memberId: string;
     amount: number;
-    precent: number;
-    exact: number;
+    percent: number | null;
+    exact: number | null;
+    equal: number | null;
+    byItems: number | null;
 }
 
 export interface ExpenseItem{
@@ -37,5 +40,10 @@ export interface ExpenseItem{
 export interface ExpenseItemMember{
     expenseItemId: string;
     userId: string;
+    amount: number;
 }
 
+export interface ExactSplit{
+    memberId: string;
+    amount: number;
+}

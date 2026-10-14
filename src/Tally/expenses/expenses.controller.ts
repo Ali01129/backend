@@ -15,7 +15,7 @@ export class ExpenseController{
         @ApiOperation({ summary: "Create expense" })
         @ApiResponse({
             status: 200,
-            description: 'Request sent successfully',
+            description: 'Expense created successfully',
         })
         @ApiResponse({
         status: 400,
@@ -25,8 +25,36 @@ export class ExpenseController{
         status: 500,
         description: 'Internal server error',
         })
+        @ApiResponse({
+        status: 400,
+        description: 'Exact splits are required',
+        })
+        @ApiResponse({
+        status: 409,
+        description: "The split amount doesn't seem to add up to the total amount",
+        })
+        @ApiResponse({
+        status: 404,
+        description: "Amount field must not be empty",
+        })
+        @ApiResponse({
+        status: 409,
+        description: "Amount can't be zero or negative",
+        })
+        @ApiResponse({
+        status: 404,
+        description: "Percentage field must not be empty",
+        })
+        @ApiResponse({
+        status: 409,
+        description: "Percentage ratio can't be zero or negative",
+        })
+        @ApiResponse({
+        status: 409,
+        description: "Item quantity can't be zero or negative",
+        })
         async create(@Param("groupId") groupId: string ,@Body() expense: CreateExpenseDto):Promise<Expense>{
-            const createdExpense = this.ExpenseService.createExpense(groupId ,expense.name, expense.currency , expense.paidBy, expense.amount, expense.splitMethod, expense.createdBy );
+            const createdExpense = this.ExpenseService.createExpense(groupId ,expense.name, expense.currency , expense.paidBy, expense.amount, expense.splitMethod, expense.createdBy ,expense.percent, expense.exactAmountSplits, expense.expenseItemName, expense.quantityOfItems);
             return createdExpense;
         }
     
