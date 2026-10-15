@@ -24,11 +24,34 @@ export class SettlementController{
         status: 500,
         description: 'Internal server error',
         })
+        @ApiResponse({
+        status: 400,
+        description: 'Amount must be greater than zero',
+        })
+        @ApiResponse({
+        status: 400,
+        description: "You can't settle with yourself",
+        })
+        @ApiResponse({
+        status: 400,
+        description: "Both users must be members of this group",
+        })
+        @ApiResponse({
+        status: 404,
+        description: "Balance doc not found",
+        })
+        @ApiResponse({
+        status: 409,
+        description: "Amount has to be positive",
+        })
+        @ApiResponse({
+        status: 409,
+        description: "Amount is more than you owe them",
+        })
         async create(@Param("groupId") groupId: string, @Body() CreateSettlementDto: CreateSettlementDto){
             return await this.SettlementService.create(groupId, CreateSettlementDto.fromUserId, CreateSettlementDto.toUserId, CreateSettlementDto.amount, 
                 CreateSettlementDto.createdBy,
                 CreateSettlementDto.currency, CreateSettlementDto.paymentMethod
             );
         }
-
 }

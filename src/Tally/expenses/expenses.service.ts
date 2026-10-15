@@ -381,14 +381,16 @@ export class ExpenseService{
             throw new BadRequestException("Both users must be members of this group");
         }
 
-        balanceDoc.create({
-            id: balanceDoc.id,
-            groupId,
-            fromUserId: hasToPayLaterUserId,
-            toUserId: paidByUserId,
-            amount
-        });
-
+        if((hasToPayLaterUserId !== paidByUserId)){
+            balanceDoc.create({
+                id: balanceDoc.id,
+                groupId,
+                fromUserId: hasToPayLaterUserId,
+                toUserId: paidByUserId,
+                amount
+            });
+        }
+        
         // (await balanceDoc.get()).data() as 
 
     }
