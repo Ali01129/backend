@@ -3,6 +3,7 @@ import { FIRESTORE } from "../Firebase/firebase.module";
 import { Injectable, Inject, ConflictException, NotFoundException, BadRequestException } from "@nestjs/common";
 import type { paymentMethod } from "./types/paymentMethod.types";
 import { settlement } from "./types/create-settlement.types";
+import { balance } from "./types/create-balance.types";
 
 @Injectable()
 export class SettlementService{
@@ -29,8 +30,8 @@ export class SettlementService{
         }
 
         const [toUser, fromUser] = await this.db.getAll(
-            this.db.collection("groupMembers").doc(`${groupId}_${fromUserId}`),
-            this.db.collection("groupMembers").doc(`${groupId}_${toUserId}`),
+            this.db.collection("groupMembers").doc(`${fromUserId}_${groupId}`),
+            this.db.collection("groupMembers").doc(`${toUserId}_${groupId}`),
         );
 
         if (!toUser.exists || !fromUser.exists) {
@@ -52,10 +53,49 @@ export class SettlementService{
                 createdAt: new Date().toString()
         });
 
+        await this.updateBalance( toUserId, fromUserId, amount);
+
         const ref = await groupSettleDoc.get();
 
         const data = ref.data() as settlement;
 
         return data;
+    }
+
+    async updateBalance(paidByUserId: string, isPayingBack: string, payingBack: number):Promise<number>{
+
+        const balanceRef = this.db.collection("balances").doc(`${isPayingBack}_${paidByUserId}`);
+
+        const balanceDoc = await balanceRef.get();
+
+        if(!(balanceDoc.exists)){
+            throw new NotFoundException("Balance doc not found");
+        }
+
+        const currentBalanceData = balanceDoc.data() as balance;
+
+        const am = currentBalanceData.amount;
+        // const currentBalance = currentBalanceData.amount;
+
+        if(payingBack <= 0){
+            throw new ConflictException("Amount has to be positive");
+        }
+
+        if(payingBack > am){
+            throw new ConflictException("Amount is more than you owe them");
+        }
+
+        const amount = (am - payingBack) as number;
+
+        await balanceRef.update({
+                fromUserId: isPayingBack,
+                toUserId: paidByUserId,
+                amount: amount
+        });
+
+        const updatedBalanceData = (await balanceRef.get()).data() as balance;
+
+        return updatedBalanceData.amount;
+
     }
 }
