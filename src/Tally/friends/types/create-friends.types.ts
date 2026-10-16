@@ -1,4 +1,4 @@
-import { User } from "../users/user.types";
+import { User } from "../../users/types/create-user.types";
 
 export interface Friend {
     id: string,
@@ -9,7 +9,3 @@ export interface Friend {
     updatedAt: string | null,
     removedAt: string | null
 }
-
-export type friendReqInfo = Pick<Friend, "friendId" | "createdAt">;
-
-export type friendInfo = Pick<User, "name">
