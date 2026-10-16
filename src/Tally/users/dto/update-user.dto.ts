@@ -1,5 +1,6 @@
 import {IsString, IsEmail, IsBoolean, IsOptional} from "class-validator";
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { currencyCode } from "../types/create-user.types";
 
 export class UpdateUserDto {
     @ApiPropertyOptional({example : "Elham"})
@@ -30,7 +31,7 @@ export class UpdateUserDto {
     @ApiPropertyOptional({example : "USD"})
     @IsString()
     @IsOptional()
-    preferredCurrency?: string;
+    preferredCurrency?: currencyCode;
 
     @ApiPropertyOptional({example : true})
     @IsBoolean()

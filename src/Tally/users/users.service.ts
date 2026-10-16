@@ -1,75 +1,120 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { User } from "./user.types";
+import { ConflictException, Inject, Injectable, NotFoundException } from "@nestjs/common";
+import { User } from "./types/create-user.types";
 import { FIRESTORE } from "../Firebase/firebase.module";
 import { Firestore } from "firebase-admin/firestore";
-import { AnyCatcher } from "rxjs/internal/AnyCatcher";
+import { updateUser } from "./types/update-user.types";
+import { Filter } from 'firebase-admin/firestore';
 
 
 @Injectable()
 export class UserService{
     constructor( @Inject(FIRESTORE) private readonly db: Firestore){}
     
-    async create(data: Omit<User, "id" | "createdAt" | "updatedAt" | "deletedAt">): Promise<User | any>{
-        try{
-            const document_ref = this.db.collection("users").doc();   // doc auto genrates id 
+    async create(
+        name: string,
+        email: string,
+        displayName: string,
+        handle: string,
+        avatarColor: string,
+        verified: boolean,
+        preferredCurrency: string,
+        subscriptionStatus: boolean): Promise<User>{
+        const userDoc = this.db.collection("users").doc();
 
-            const user: User = {...data, id:  document_ref.id, createdAt: new Date().toString(), updatedAt: null, deletedAt: null};  
-            
-            // if(user.email === email){
-            //     throw new Error("User already exists.");
-            // }
+        userDoc.create({
+            id: userDoc.id,
+            name: name,
+            email: email,
+            displayName: displayName,
+            handle: handle,
+            avatarColor: avatarColor,
+            verified: verified,
+            preferredCurrency: preferredCurrency,
+            subscriptionStatus: subscriptionStatus, 
+            createdAt: new Date().toString(),
+            updatedAt: null,
+            deletedAt: null
+        });
+        
+        const createdUser = (await userDoc.get()).data() as User;
+        
+        return createdUser;
 
-            const user_created = await document_ref.set(user);
-            
-            return user_created;
-
-        }catch(error){
-            console.error("Error creating user:", error);
-            throw new Error("Failed to create user");
-        }
     }
 
-    async getAllUsers(includeDeleted?: boolean): Promise<User[]>{
-        const usersSnapshot = await this.db.collection("users").get();
+    async getAllUsers(showDeleted?: boolean): Promise<User[]>{ //change function name 
+        // const activeUsers = `"deletedAt","==" , null`;
+        // const inactiveUsers = `"deletedAt","!=" , null`;
+        
+        const operator = showDeleted ? "!=" : "=="; 
+
+        // const filter = includeDeleted ? activeUsers : inactiveUsers;
+        // thought about Json parse but
+        // where take 3 arguments can't pass in a single variable or string 
+
+        const usersSnapshot = await this.db.collection("users").where("deletedAt", operator, null).get();
+
         const users: User[] = [];
 
         usersSnapshot.forEach((document) => {
             const userData = document.data() as User;
-            if(includeDeleted === true){
-                if(userData.deletedAt !== null || userData.deletedAt === null){
-                    users.push(userData);
-                }
-            }else{
-                userData.deletedAt === null && users.push(userData);
-            }
-        })
-        // usersSnapshot.forEach((document) => {
-        //     const userData = document.data() as User;
-        //     users.push(userData);
-        // })
+            users.push(userData);   
+        });
+        
         return users;
     }
 
-    async getUserById(id: string): Promise<User | null> {
-        const userDocument = await this.db.collection("users").doc(id).get();
+    async searchUser(id?: string , name?: string , email?: string): Promise<User> {
+        // const { id , name , email } = params;
 
-        return userDocument.exists ? (userDocument.data() as User) : null;
+        // const userDoc = this.db.collection("users").where(Filter.or(
+        //     Filter.where("id" , "==" , id),
+        //     Filter.where("name" , "==" , name),
+        //     Filter.where("email" , "==" , email)
+        // ));
+
+        // const userRef = await userDoc.get();
+        // console.log("hey its working");
+
+        const filter: Filter[] = [];
+
+        if(id) filter.push(Filter.where("id" , "==" , id));
+        if(name) filter.push(Filter.where("name" , "==" , name));
+        if(email) filter.push(Filter.where("email" , "==" , email));
+        
+        if(filter.length === 0){
+            throw new ConflictException("Aleast one thing should be provided");
+        }
+
+        const userDocument = this.db.collection("users").where(Filter.or(...filter));
+
+        const userFound = await userDocument.get();
+        
+        if(userFound.empty){
+            throw new NotFoundException("User not found!");
+        }
+
+        const userData = userFound.docs[0];
+        // console.log(userData);
+        return { id: userData.id , ...userData.data()} as User;
     }
 
-    async deleteUserById(id: string): Promise<void> {
+    async deleteUserById(id: string): Promise<string> {
         const userDocument = await this.db.collection("users").doc(id).get();
 
         if(!userDocument.exists){
-            // await this.db.collection("users").doc(id).delete();
             throw new Error("User not found");
         }
+
         await this.db.collection("users").doc(id).update({deletedAt: new Date().toString()});
-        return;
+
+        return userDocument.id;
     }
     
-    async updateUserById(id: string, data: Partial<Pick<User, "name" | "email" | "displayName" | "handle" | "avatarColor" | "preferredCurrency" | "subscriptionStatus" | "verified" | "deletedAt" >>): Promise<User> {
+    async updateUserById(id: string, data: updateUser): Promise<User> {
 
-        this.db.settings({ ignoreUndefinedProperties: true });
+        this.db.settings({ignoreUndefinedProperties : true});
+
         const userRef = this.db.collection("users").doc(id); //reference  //
 
         const userDocument = await userRef.get();
@@ -82,7 +127,7 @@ export class UserService{
 
         const updatedUser = await userRef.get();
 
-        return updatedUser.data() as User;
+        return {...updatedUser.data()} as User;
     }
 
 }
