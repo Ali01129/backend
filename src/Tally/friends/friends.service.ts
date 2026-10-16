@@ -1,44 +1,22 @@
 import { Injectable, Inject, ConflictException, NotFoundException, BadRequestException } from "@nestjs/common";
-import { Firestore, Query, Transaction } from "firebase-admin/firestore";
+import { Firestore } from "firebase-admin/firestore";
 import { FIRESTORE } from "../Firebase/firebase.module";
-import { Friend } from "./friends.types";
-import { User } from "../users/user.types";
+import { Friend } from "./types/create-friends.types";
+import { User } from "../users/types/create-user.types";
 import { SearchFriendDto } from "./dto/search-friend.dto";
-import { request } from "http";
 import { Filter } from 'firebase-admin/firestore';
-import {friendReqInfo, friendInfo} from "./friends.types"
-
-// import ConflictException from 
-// import { collection, query, where } from "firebase/firestore";
+import {friendReqInfo} from "./types/get-friend-info.types";
+import {acceptFriendRequest} from "./types/accept-friend-request.types";
+import {declineRequest} from "./types/decline-friend-request.types";
+import {friendRequest} from "./types/friend-request-direction.types";
 
 @Injectable()
 export class FriendsService {
     constructor(@Inject(FIRESTORE) private readonly db: Firestore){}
 
-    // async search(filter: SearchFriendDto): Promise<User> {
-    //     const { id, email, handle } = filter;
-
-    //     let query: Query = this.db.collection("users").where("deletedAt", "==", null);
-
-    //     if(id) query = query.where("id", "==", id);
-        
-    //     if(email) query = query.where("email", "==", email);
-
-    //     if(handle) query = query.where("handle", "==", handle);
-        
-    //     if(!query){
-    //         throw new Error("User not found");
-    //     }
-
-    //     const userDocument = await query.get();
-
-    //     return userDocument;
-    // }
-
     async search(filter: SearchFriendDto): Promise<User[]> {
         const { id, email, handle } = filter;
 
-        // collect one condition per provided field
         const conditions: Filter[] = [];
         if (id) conditions.push(Filter.where('id', '==', id));
         if (email) conditions.push(Filter.where('email', '==', email.toLowerCase()));
@@ -50,7 +28,7 @@ export class FriendsService {
 
         const snap = await this.db
             .collection('users')
-            .where(Filter.or(...conditions)) // matches ANY of the conditions
+            .where(Filter.or(...conditions))
             .get();
 
         // filter out soft-deleted users in code (avoids needing an extra index)
@@ -65,18 +43,15 @@ export class FriendsService {
         return users;
     }
 
-    async sendFriendRequest(userId: string, friendId: string): Promise<Friend | void> {
+    async sendFriendRequest(userId: string, friendId: string): Promise<Friend> {
         if (userId === friendId){
-            throw new Error("You can not send a Friend Request to yourself");
+            throw new ConflictException("You can not send a Friend Request to yourself");
         }
-        // const existingRequest = this.db.collection("friends").doc() 
 
         const userRef = this.db.collection("users").doc(userId);
         const friendRef = this.db.collection("users").doc(friendId);
 
         const friendshipId = [userRef.id,friendRef.id].sort().join("_");
-        console.log(friendshipId);
-
 
         const pairFriendIdRef = this.db.collection("friends").doc(friendshipId);
 
@@ -115,7 +90,7 @@ export class FriendsService {
         });
     }
 
-    async acceptFriendRequest(sentBy: string, sentTo: string, friendRequestId: string): Promise<Pick<Friend, "id" | "createdAt" | "updatedAt" | "status">> {
+    async acceptFriendRequest(sentBy: string, sentTo: string, friendRequestId: string): Promise<acceptFriendRequest> {
         const requestRef = this.db.collection("friends").doc(friendRequestId);
 
         const requestSnapshot = (await requestRef.get()).data() as Friend;
@@ -142,7 +117,7 @@ export class FriendsService {
         };
     }
 
-    async declineFriendRequest(requestId: string):Promise<Pick<Friend, "friendId" | "status">>{
+    async declineFriendRequest(requestId: string):Promise<declineRequest>{
         const requestRef  = this.db.collection("friends").doc(requestId);
 
         const requestData = await requestRef.get();
@@ -189,25 +164,18 @@ export class FriendsService {
         })
     }
 
-    async listFriendRequests(userId: string , direction: "incoming" | "outgoing" | "all"):Promise<(friendReqInfo & {direction : "incoming" | "outgoing" | "all"})[]>{
+    async listFriendRequests(userId: string , direction: "incoming" | "outgoing" | "all"):Promise<friendRequest[]>{
         const friendsCollection = this.db.collection("friends");
-        // const usersCollection = this.db.collection("users").doc(userId);
-
-        // const username = await usersCollection.get();
-
-        // const friendIdRef = await friendCollection.get();
         
         const incomingRequests = () => friendsCollection.where( "friendId" , "==" , userId).where( "status", "==" ,"pending").get();
         
         const outgoingRequests = () => friendsCollection.where( "userId" , "==" , userId).where( "status", "==" ,"pending").get();
         
-        const requestsList: (friendReqInfo & {direction: "incoming" | "outgoing" | "all"})[] = [];
+        const requestsList: friendRequest[] = [];
 
         if(direction === "incoming" || direction === "all" ){
             const incomingDocSnap  = await incomingRequests();
             incomingDocSnap.forEach(element => {
-                // const data = element.data() as friendReqInfo;
-
                 requestsList.push({ ...(element.data() as friendReqInfo) , direction: "incoming" })
             });
         }
@@ -217,17 +185,6 @@ export class FriendsService {
                 requestsList.push({...(element.data() as friendReqInfo) , direction: "outgoing" })
             });
         }
-        // if(direction === "all"){
-        //     const incomingDocSnap  = await incomingRequests;
-        //     incomingDocSnap.forEach(element => {
-        //         requestsList.push({...(element.data() as Friend) , direction: "incoming" })
-        //     });
-        //     const outgoingDocSnap  = await outgoingRequests;
-        //     outgoingDocSnap.forEach(element => {
-        //         requestsList.push({...(element.data() as Friend) , direction: "outgoing" })
-        //     });
-        // }
-
         return requestsList;
 
     }
