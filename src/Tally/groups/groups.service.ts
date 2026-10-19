@@ -1,8 +1,9 @@
 import { Firestore } from "firebase-admin/firestore";
 import { FIRESTORE } from "../Firebase/firebase.module";
-import { Injectable, Inject, ConflictException, NotFoundException, BadRequestException } from "@nestjs/common";
-import {Group} from "./groups.types";
-import { GroupMember } from "./groups.types";
+import { Inject, ConflictException, NotFoundException } from "@nestjs/common";
+import {Group} from "../groups/types/create-group.types";
+import { GroupMember } from "../groups/types/create-group-member.types";
+import type { groupType } from "../groups/types/create-group.types";
 
 
 export class GroupsService{
@@ -17,22 +18,20 @@ export class GroupsService{
         }
     }
 
-    async create(adminId: string, groupName: string, groupType: "trip" | "home" | "couple" | "event" | "other"):Promise<Group>{
+    async create(adminId: string, groupName: string, groupType: groupType):Promise<Group>{
         const createdAt = new Date().toString();
 
         const groupTimeline: string = createdAt + "- Present";
 
         const groupIdDoc = this.db.collection("groups").doc();
 
-        const batch = await this.db.batch();
+        const batch = this.db.batch();
 
         const groupAdminDoc = this.db.collection("groupMembers").doc(`${adminId}_${groupIdDoc.id}`);
 
         const groupAdmin = this.groupMemberBuilder(groupIdDoc.id, adminId, "admin");
 
         batch.create(groupAdminDoc, groupAdmin);
-
-        // await groupMemberDoc.create(groupAdmin);
 
         const group: Group = {
             id: groupIdDoc.id,
@@ -53,7 +52,6 @@ export class GroupsService{
             throw new Error("Error couldn't create group!");
         }
 
-        // await batch.commit();
         await groupIdDoc.create(group);
         return group;
     }
@@ -70,7 +68,7 @@ export class GroupsService{
         return ref.data() as Group;
     }
 
-    async updateGroupSettings(groupId: string, name: string, groupType: string ):Promise<Group>{
+    async updateGroupSettings(groupId: string, name: string, groupType: groupType ):Promise<Group>{
         const doc = this.db.collection("groups").doc(groupId);
 
         const ref = await doc.get();
@@ -78,10 +76,6 @@ export class GroupsService{
         if(!ref.exists){
             throw new NotFoundException("Group doesn't exist");
         }
-
-        // const groupDetails = ref.data() as Group;
-
-        // const groupCreatedAt: string = groupDetails.createdAt;
 
         await doc.update({ name: name, type: groupType, updatedAt: new Date().toString()
         })
