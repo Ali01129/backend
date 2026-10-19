@@ -1,11 +1,13 @@
-import { Controller , Post , Body, HttpCode, HttpStatus, Get, Param, Delete, Patch, Query } from "@nestjs/common";
+import { Controller , Post , Body, HttpCode, HttpStatus, Get, Param, Delete, Patch } from "@nestjs/common";
 import { GroupsService } from "./groups.service";
-import { ApiParam, ApiQuery } from "@nestjs/swagger";
+import { ApiParam } from "@nestjs/swagger";
 import { CreateGroupDto } from "./dto/create-group.dto";
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { Group } from "./groups.types";
+import { ApiOperation, ApiResponse } from "@nestjs/swagger";
+import { Group } from "../groups/types/create-group.types";
 import {UpdateGroupDto} from "./dto/update-group.dto";
 import {addMemberDto} from "./dto/addMemberDto";
+import type { groupType } from "../groups/types/create-group.types";
+
 
 @Controller("/groups")
 export class GroupsController{
@@ -29,7 +31,7 @@ export class GroupsController{
         })
         async create(@Param("adminId") adminId: string, @Body() group: CreateGroupDto) {
             const g  = await this.GroupsService.create(adminId, group.groupName,
-                group.groupType as "trip" | "home" | "couple" | "event" | "other",
+                group.groupType as groupType
             );
         }
 
@@ -80,7 +82,7 @@ export class GroupsController{
             description: "Group doesn't exist",
             })
             async update(@Param("groupId") groupId: string, @Body() groupDetail: UpdateGroupDto):Promise<Group>{
-                const groupDetails = await this.GroupsService.updateGroupSettings(groupId, groupDetail.groupName!, groupDetail.groupType!);
+                const groupDetails = await this.GroupsService.updateGroupSettings(groupId, groupDetail.groupName!, groupDetail.groupType! as groupType);
 
                 return groupDetails;
             }
@@ -148,7 +150,6 @@ export class GroupsController{
         @Post("/:groupId/members")
         @HttpCode(HttpStatus.OK)
         @ApiParam({name: "groupId", example: "ytjkbcj"})
-        // @ApiParam({name: "members", example: "fvmkev"})
             @ApiOperation({ summary: "Add members to group" })
             @ApiResponse({
                 status: 200,

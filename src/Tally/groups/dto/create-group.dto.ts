@@ -11,8 +11,4 @@ export class CreateGroupDto{
     @ApiProperty({name: "groupType", enum: ["trip" , "home" , "couple" , "event" , "other"] })
     @IsIn(["trip" , "home" , "couple" , "event" , "other"])
     groupType!: string;
-
-    // @IsString()
-    // @IsNotEmpty()
-    // adminId!: string;
 }
