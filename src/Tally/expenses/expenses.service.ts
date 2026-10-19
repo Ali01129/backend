@@ -1,9 +1,10 @@
 import { Firestore } from "firebase-admin/firestore";
 import { FIRESTORE } from "../Firebase/firebase.module";
 import { Injectable, Inject, ConflictException, NotFoundException, BadRequestException } from "@nestjs/common";
-import {Expense} from "./expenses.types";
-import { Group } from "../groups/groups.types";
-import { error } from "console";
+import {Expense} from "./types/create-expense.types";
+import { Group } from "../groups/types/create-group.types";
+import { splitMethods } from "./types/splitMethod.types";
+
 
 @Injectable()
 export class ExpenseService{
@@ -13,7 +14,7 @@ export class ExpenseService{
             currency: string,
             paidBy: string,
             amount: number,
-            splitMethod: "equal" | "exact" | "percent" | "by-items",
+            splitMethod: splitMethods,
             createdBy: string):Promise<Expense & Group>{
         const groupExpenseDoc = this.db.collection("expenses").doc();
         const groupRef = await this.db.collection("groups").doc(groupId).get();
@@ -72,7 +73,7 @@ export class ExpenseService{
             currency: string,
             paidBy: string,
             amount: number,
-            splitMethod: "equal" | "exact" | "percent" | "by-items",
+            splitMethod: splitMethods,
             createdBy: string):Promise<Expense>{
 
         const groupExpenseDoc = this.db.collection("expenses").doc(expenseId);
@@ -96,23 +97,11 @@ export class ExpenseService{
         if (splitMethod !== undefined) updates.splitMethod = splitMethod;
         updates.updatedAt = new Date().toString();
 
-        // if (Object.keys(updates).length === 0) {
-        // throw new BadRequestException("No fields to update");
-        // }
+        if (Object.keys(updates).length === 0) {
+        throw new BadRequestException("No fields to update");
+        }
 
         await groupExpenseDoc.update(updates);
-
-        // await groupExpenseDoc.update({
-        //     name,
-        //     totalAmount: amount, 
-        //     currency,
-        //     paidByMemberId: paidBy,
-        //     createdAt: new Date().toString(),
-        //     splitMethod,
-        //     createdBy,
-        //     updatedAt: new Date().toString()
-        // });
-
 
         const updatedExpense = (await groupExpenseDoc.get()).data() as Expense;
 

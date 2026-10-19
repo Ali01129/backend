@@ -7,9 +7,11 @@ import {
   IsString,
   Length,
 } from "class-validator";
+import { splitMethods } from "../types/splitMethod.types";
 
-export const SPLIT_METHODS = ["equal", "exact", "percent", "by-items"] as const;
-export type SplitMethod = (typeof SPLIT_METHODS)[number];
+// export const SPLIT_METHODS = ["equal", "exact", "percent", "by-items"];
+// export type SplitMethod = (typeof SPLIT_METHODS)[number];  
+
 
 export class CreateExpenseDto {
   @ApiProperty({ example: "Dinner at Café" })
@@ -32,9 +34,9 @@ export class CreateExpenseDto {
   @IsPositive()
   amount!: number;
 
-  @ApiProperty({ enum: SPLIT_METHODS, example: "equal" })
-  @IsIn(SPLIT_METHODS)
-  splitMethod!: SplitMethod;
+  @ApiProperty({ example: "equal" })
+  @IsIn(Object.values(splitMethods))
+  splitMethod!: splitMethods;
 
   @ApiProperty({example: "user8"})
   @IsNotEmpty()

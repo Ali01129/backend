@@ -1,8 +1,8 @@
 import { ApiPropertyOptional } from "@nestjs/swagger";
 import { IsIn, IsNotEmpty,IsNumber,IsOptional,IsPositive,IsString,Length,
 } from "class-validator";
-import { SPLIT_METHODS } from "./create-expense.dto";
-import type {SplitMethod} from "./create-expense.dto";
+import { splitMethods } from "../types/splitMethod.types";
+
 
 export class UpdateExpenseDto {
   @ApiPropertyOptional({ example: "Dinner at Café" })
@@ -29,10 +29,10 @@ export class UpdateExpenseDto {
   @IsPositive()
   amount?: number;
 
-  @ApiPropertyOptional({ enum: SPLIT_METHODS, example: "equal" })
+  @ApiPropertyOptional({ example: "equal" })
   @IsOptional()
-  @IsIn(SPLIT_METHODS)
-  splitMethod?: SplitMethod;
+  @IsIn(Object.values(splitMethods))
+  splitMethod?: splitMethods;
 
   @ApiPropertyOptional({ example: "user5" })
   @IsOptional()
