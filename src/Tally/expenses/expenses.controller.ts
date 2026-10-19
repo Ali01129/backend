@@ -2,7 +2,7 @@ import { Inject,Controller, Post , Body, HttpCode, HttpStatus, Get, Param, Delet
 import { ExpenseService } from "./expenses.service";
 import { ApiOperation, ApiResponse, ApiParam, ApiQuery } from "@nestjs/swagger";
 import {CreateExpenseDto} from "./dto/create-expense.dto";
-import { Expense } from "./expenses.types";
+import { Expense } from "./types/create-expense.types";
 import { UpdateExpenseDto} from "./dto/update-expense.dto";
 
 @Controller("/expense")
@@ -56,7 +56,10 @@ export class ExpenseController{
         status: 409,
         description: "The expense doesn't belong to this group",
         })
-        
+        @ApiResponse({
+        status: 404,
+        description: 'No fields to update',
+        })
         async update(@Param("groupId") groupId: string ,@Param("expenseId") expenseId: string ,@Body() expense: UpdateExpenseDto):Promise<Expense>{
             const updatedExpense = this.ExpenseService.update(expenseId, groupId, expense.name!, expense.currency!, expense.paidBy!, expense.amount!, expense.splitMethod!, expense.createdBy!);
             return updatedExpense;
