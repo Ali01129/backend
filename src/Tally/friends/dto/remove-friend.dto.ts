@@ -6,11 +6,6 @@ export class RemoveFriendQureyDto{
     @IsString()
     @IsNotEmpty()
     userId!: string;
-
-    // @ApiProperty({example: "friendId"})
-    // @IsString()
-    // @IsNotEmpty()
-    // friendId!: string;
 }
 
 export class RemoveFriendParamDto{
@@ -19,3 +14,4 @@ export class RemoveFriendParamDto{
     @IsNotEmpty()
     friendId!: string;
 }
+

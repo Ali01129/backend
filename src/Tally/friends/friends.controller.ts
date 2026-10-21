@@ -1,71 +1,72 @@
 import {
-  Controller,
-  Post,
   Body,
-  HttpCode,
-  HttpStatus,
-  Get,
-  Param,
+  Controller,
   Delete,
-  Query,
+  Get,
+  HttpStatus,
+  Param,
+  Post,
+  Query
 } from '@nestjs/common';
-import { FriendsService } from './friends.service';
-import { ApiOperation, ApiResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
-import { SendRequestDto } from './dto/send-request.dto';
-import { Friend } from './types/create-friends.types';
-import { AcceptRequestDto } from './dto/accept-request.dto';
-import { SendRequestResponseDto } from './dto/send-request-response.dto';
-import { SearchFriendDto } from './dto/search-friend.dto';
+import { ApiParam, ApiQuery } from '@nestjs/swagger';
 import { CreateUserResponseDto } from '../users/dto/create-user-response.dto';
+import { apiResponseGenerator } from '../users/helpers/apiResponseGenerator';
 import { User } from '../users/types/create-user.types';
+import { AcceptRequestDto } from './dto/accept-request.dto';
 import { RemoveFriendQureyDto } from './dto/remove-friend.dto';
-import { friendReqInfo } from './types/get-friend-info.types';
-import {declineRequest} from "./types/decline-friend-request.types";
-import {friendRequest} from "./types/friend-request-direction.types";
+import { SearchFriendDto } from './dto/search-friend.dto';
+import { SendRequestResponseDto } from './dto/send-request-response.dto';
+import { SendRequestDto } from './dto/send-request.dto';
+import { FriendsService } from './friends.service';
+import { Friend } from './types/create-friends.types';
+import { declineRequest } from './types/decline-friend-request.types';
+import { friendRequest } from './types/friend-request-direction.types';
 
 @Controller('/friends')
 export class FriendsController {
   constructor(private readonly FirendsService: FriendsService) {}
 
   @Post('sendRequest')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Send a friend request' })
-  @ApiResponse({
-    status: 200,
-    description: 'Request sent successfully',
-    type: SendRequestResponseDto,
+  @apiResponseGenerator({
+    operation: 'Send a friend request',
+    httpCode: HttpStatus.OK,
+    responses: [
+      {
+        status: 200,
+        description: 'Request sent successfully',
+        type: SendRequestResponseDto,
+      },
+      {
+        status: 400,
+        description: 'Bad request',
+      },
+      {
+        status: 500,
+        description: 'Internal server error',
+      },
+      {
+        status: 404,
+        description: 'You can not send a Friend Request to yourself',
+      },
+      {
+        status: 404,
+        description: "sender doesn't exist",
+      },
+      {
+        status: 404,
+        description: "User you are trying to send request doesn't exist",
+      },
+      {
+        status: 409,
+        description: 'Aleady a friend',
+      },
+      {
+        status: 409,
+        description: 'Aleady sent a request',
+      },
+    ],
   })
-  @ApiResponse({
-    status: 400,
-    description: 'Bad request',
-  })
-  @ApiResponse({
-    status: 500,
-    description: 'Internal server error',
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'You can not send a Friend Request to yourself',
-  })
-  @ApiResponse({
-    status: 404,
-    description: "sender doesn't exist",
-  })
-  @ApiResponse({
-    status: 404,
-    description: "User you are trying to send request doesn't exist",
-  })
-  @ApiResponse({
-    status: 409,
-    description: "Aleady a friend",
-  })
-  @ApiResponse({
-    status: 409,
-    description: "Aleady sent a request",
-  })
-  async sendRequest(
-    @Body() sendRequestDto: SendRequestDto,
-  ): Promise<Friend> {
+  async sendRequest(@Body() sendRequestDto: SendRequestDto): Promise<Friend> {
     const request = await this.FirendsService.sendFriendRequest(
       sendRequestDto.userId,
       sendRequestDto.friendId,
@@ -75,15 +76,19 @@ export class FriendsController {
   }
 
   @Post(':requestId/accept')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Accept a friend request' })
-  @ApiResponse({
-    status: 200,
-    description: 'Request acccepted successfully',
-  })
-  @ApiResponse({
-    status: 500,
-    description: 'Internal server error',
+  @apiResponseGenerator({
+    operation: 'Accept a friend request',
+    httpCode: HttpStatus.OK,
+    responses: [
+      {
+        status: 200,
+        description: 'Request acccepted successfully',
+      },
+      {
+        status: 500,
+        description: 'Internal server error',
+      },
+    ],
   })
   async acceptRequest(
     @Body() AcceptRequestDto: AcceptRequestDto,
@@ -98,22 +103,27 @@ export class FriendsController {
   }
 
   @Post(':requestId/decline')
-  @ApiOperation({ summary: 'Decline a friend request' })
-  @ApiResponse({
-    status: 201,
-    description: 'Declined successfully',
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Bad request',
-  })
-  @ApiResponse({
-    status: 500,
-    description: 'Internal server error',
-  })
-  @ApiResponse({
-    status: 404,
-    description: "The request doesn't exist",
+  @apiResponseGenerator({
+    operation: 'Decline a friend request',
+    httpCode: HttpStatus.OK,
+    responses: [
+      {
+        status: 201,
+        description: 'Declined successfully',
+      },
+      {
+        status: 400,
+        description: 'Bad request',
+      },
+      {
+        status: 500,
+        description: 'Internal server error',
+      },
+      {
+        status: 404,
+        description: "The request doesn't exist",
+      },
+    ],
   })
   async decline(
     @Param('requestId') requestId: string,
@@ -125,27 +135,32 @@ export class FriendsController {
   }
 
   @Get('search')
-  @ApiOperation({ summary: 'Search a user to send them a friend request' })
-  @ApiResponse({
-    status: 200,
-    description: 'User Found',
-    type: [CreateUserResponseDto],
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Bad request',
-  })
-  @ApiResponse({
-    status: 500,
-    description: 'Internal server error',
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'User not found',
-  })
-  @ApiResponse({
-    status: 404,
-    description: "Provide an id, email or handle",
+  @apiResponseGenerator({
+    operation: 'Search a user to send them a friend request',
+    httpCode: HttpStatus.OK,
+    responses: [
+      {
+        status: 200,
+        description: 'User Found',
+        type: [CreateUserResponseDto],
+      },
+      {
+        status: 400,
+        description: 'Bad request',
+      },
+      {
+        status: 500,
+        description: 'Internal server error',
+      },
+      {
+        status: 404,
+        description: 'User not found',
+      },
+      {
+        status: 404,
+        description: 'Provide an id, email or handle',
+      },
+    ],
   })
   async search(@Query() SearchFriendDto: SearchFriendDto): Promise<User[]> {
     const user = await this.FirendsService.search(SearchFriendDto);
@@ -154,23 +169,27 @@ export class FriendsController {
   }
 
   @Delete(':friendId')
-  @ApiOperation({ summary: 'To remove a friend' })
-  @ApiParam({ name: 'friendId', example: 'VCAohl' })
-  @ApiResponse({
-    status: 200,
-    description: 'Removed friend successfully',
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Not your friend!',
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Bad request',
-  })
-  @ApiResponse({
-    status: 500,
-    description: 'Internal server error',
+  @apiResponseGenerator({
+    operation: 'To remove a friend',
+    httpCode: HttpStatus.OK,
+    responses: [
+      {
+        status: 200,
+        description: 'Removed friend successfully',
+      },
+      {
+        status: 404,
+        description: 'Not your friend!',
+      },
+      {
+        status: 400,
+        description: 'Bad request',
+      },
+      {
+        status: 500,
+        description: 'Internal server error',
+      },
+    ],
   })
   async removeFriend(
     @Query() currentUserId: RemoveFriendQureyDto,
@@ -180,32 +199,34 @@ export class FriendsController {
   }
 
   @Get('friendRequests/:userId')
-  @ApiOperation({ summary: 'List of friend requests' })
   @ApiQuery({
     name: 'direction',
     required: true,
     enum: ['incoming', 'outgoing', 'all'],
   })
-  // @ApiQuery({name: "outgoing", required: false})
-  // @ApiQuery({name: "all", required: false})
   @ApiParam({ name: 'userId', example: 'zfwk' })
-  @ApiResponse({
-    status: 200,
-    description: 'Friend request list fetched successfully',
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Bad request',
-  })
-  @ApiResponse({
-    status: 500,
-    description: 'Internal server error',
+  @apiResponseGenerator({
+    operation: 'List of friend requests',
+    httpCode: HttpStatus.OK,
+    responses: [
+      {
+        status: 200,
+        description: 'Friend request list fetched successfully',
+      },
+      {
+        status: 400,
+        description: 'Bad request',
+      },
+      {
+        status: 500,
+        description: 'Internal server error',
+      },
+    ],
   })
   async friendRequestList(
     @Param('userId') userId: string,
     @Query('direction') direction: 'incoming' | 'outgoing' | 'all',
-  ): Promise<friendRequest[]
-  > {
+  ): Promise<friendRequest[]> {
     const list = await this.FirendsService.listFriendRequests(
       userId,
       direction,
@@ -214,3 +235,4 @@ export class FriendsController {
     return list;
   }
 }
+

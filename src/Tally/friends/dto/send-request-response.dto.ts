@@ -9,3 +9,4 @@ export class SendRequestResponseDto{
     @ApiProperty({example: "null"}) updatedAt!: string;
     @ApiProperty({example: "null"}) removedAt!: string;
 }
+
