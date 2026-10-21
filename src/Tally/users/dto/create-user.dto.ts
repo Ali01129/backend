@@ -50,3 +50,4 @@ export class CreateUserDto {
   @IsNotEmpty()
   readonly verified!: boolean;
 }
+

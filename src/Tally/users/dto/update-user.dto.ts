@@ -43,3 +43,4 @@ export class UpdateUserDto {
     @IsOptional()
     verified?: boolean;
 }
+

@@ -29,3 +29,4 @@ export const FIRESTORE = 'FIRESTORE';
   exports: [FIRESTORE],
 })
 export class FirebaseModule {}
+

@@ -27,3 +27,4 @@ export interface User{
 // export type createUser = Extract<User, "id" | "createdAt" | "updatedAt" | "deletedAt">;
 
 // export type currencyCode = "USD" | "EUR" | "GBP" | "CAD" | "AUD" | "INR" | "PKR";
+

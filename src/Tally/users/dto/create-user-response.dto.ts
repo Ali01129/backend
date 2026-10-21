@@ -11,3 +11,4 @@ export class CreateUserResponseDto {
     @ApiProperty({example : true}) subscriptionStatus!: boolean; 
     @ApiProperty({example : true}) verified!: boolean;
 }
+
