@@ -5,13 +5,11 @@ import { IsNotEmpty, IsOptional, IsString } from "class-validator";
 export class SearchUserDto{
     @ApiPropertyOptional({name: "id"})
     @IsString()
-    // @IsNotEmpty()
     @IsOptional()
     id? : string;
 
     @ApiPropertyOptional({name: "name"})
     @IsString()
-    // @IsNotEmpty()
     @IsOptional()
     name? : string;
 

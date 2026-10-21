@@ -11,3 +11,4 @@ export interface ApiResponseGenerator {
     operation: string;
     responses : ApiResponseItem[];
 }
+

@@ -65,17 +65,6 @@ export class UserService{
     }
 
     async searchUser(id?: string , name?: string , email?: string): Promise<User> {
-        // const { id , name , email } = params;
-
-        // const userDoc = this.db.collection("users").where(Filter.or(
-        //     Filter.where("id" , "==" , id),
-        //     Filter.where("name" , "==" , name),
-        //     Filter.where("email" , "==" , email)
-        // ));
-
-        // const userRef = await userDoc.get();
-        // console.log("hey its working");
-
         const filter: Filter[] = [];
 
         if(id) filter.push(Filter.where("id" , "==" , id));

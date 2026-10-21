@@ -1,23 +1,22 @@
 import {
-  Controller,
-  Post,
   Body,
-  HttpCode,
-  HttpStatus,
-  Get,
-  Param,
+  Controller,
   Delete,
+  Get,
+  HttpStatus,
+  Param,
   Patch,
+  Post,
   Query,
 } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UserService } from './users.service';
-import { User } from './types/create-user.types';
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { CreateUserResponseDto } from './dto/create-user-response.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 import { SearchUserDto } from './dto/search-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { apiResponseGenerator } from './helpers/apiResponseGenerator';
+import { User } from './types/create-user.types';
+import { UserService } from './users.service';
 
 @ApiTags('Tally')
 @Controller('/user')

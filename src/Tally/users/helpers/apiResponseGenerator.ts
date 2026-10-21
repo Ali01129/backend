@@ -11,3 +11,4 @@ export function apiResponseGenerator(response : ApiResponseGenerator): MethodDec
         ...responses.map(response => ApiOperation(response))
     );
 }
+
