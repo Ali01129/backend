@@ -103,7 +103,7 @@ export class UserController {
 
   @Get(':showDeleted')
   @apiResponseGenerator({
-    operation: 'Create a new user',
+    operation: 'Show users list active/inactive',
     httpCode: HttpStatus.OK,
     responses: [
       {
@@ -130,7 +130,7 @@ export class UserController {
 
   @Delete(':id')
   @apiResponseGenerator({
-    operation: 'Create a new user',
+    operation: 'Delete a user',
     httpCode: HttpStatus.OK,
     responses: [
       {
@@ -154,7 +154,7 @@ export class UserController {
 
   @Patch(':id')
   @apiResponseGenerator({
-    operation: 'Create a new user',
+    operation: 'Update user info',
     httpCode: HttpStatus.OK,
     responses: [
       {
