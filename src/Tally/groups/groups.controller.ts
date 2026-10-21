@@ -1,230 +1,296 @@
-import { Controller , Post , Body, HttpCode, HttpStatus, Get, Param, Delete, Patch } from "@nestjs/common";
-import { GroupsService } from "./groups.service";
-import { ApiParam } from "@nestjs/swagger";
-import { CreateGroupDto } from "./dto/create-group.dto";
-import { ApiOperation, ApiResponse } from "@nestjs/swagger";
-import { Group } from "../groups/types/create-group.types";
-import {UpdateGroupDto} from "./dto/update-group.dto";
-import {addMemberDto} from "./dto/addMemberDto";
-import type { groupType } from "../groups/types/create-group.types";
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpCode,
+    HttpStatus,
+    Param,
+    Patch,
+    Post,
+} from '@nestjs/common';
+import { ApiParam } from '@nestjs/swagger';
+import type { groupType } from '../groups/types/create-group.types';
+import { Group } from '../groups/types/create-group.types';
+import { apiResponseGenerator } from '../users/helpers/apiResponseGenerator';
+import { addMemberDto } from './dto/addMemberDto';
+import { CreateGroupDto } from './dto/create-group.dto';
+import { UpdateGroupDto } from './dto/update-group.dto';
+import { GroupsService } from './groups.service';
 
+@Controller('/groups')
+export class GroupsController {
+  constructor(private readonly GroupsService: GroupsService) {}
 
-@Controller("/groups")
-export class GroupsController{
-    constructor(private readonly GroupsService: GroupsService ){}
-
-    @Post("/create/:adminId")
-    @HttpCode(HttpStatus.OK)
-    @ApiParam({name: "adminId", example: "sfwe"})
-        @ApiOperation({ summary: "Create a group" })
-        @ApiResponse({
-            status: 200,
-            description: 'Group created successfully',
-        })
-        @ApiResponse({
+  @Post('/create/:adminId')
+  @HttpCode(HttpStatus.OK)
+  @ApiParam({ name: 'adminId', example: 'sfwe' })
+  @apiResponseGenerator({
+    operation: 'Create a group',
+    httpCode: HttpStatus.OK,
+    responses: [
+      {
+        status: 200,
+        description: 'Group created successfully',
+      },
+      {
         status: 400,
         description: 'Bad request',
-        })
-        @ApiResponse({
+      },
+      {
         status: 500,
         description: 'Internal server error',
-        })
-        async create(@Param("adminId") adminId: string, @Body() group: CreateGroupDto) {
-            const g  = await this.GroupsService.create(adminId, group.groupName,
-                group.groupType as groupType
-            );
-        }
+      },
+    ],
+  })
+  async create(
+    @Param('adminId') adminId: string,
+    @Body() group: CreateGroupDto,
+  ) {
+    const g = await this.GroupsService.create(
+      adminId,
+      group.groupName,
+      group.groupType as groupType,
+    );
+  }
 
-        @Get(":groupId")
-        @HttpCode(HttpStatus.OK)
-        @ApiParam({name: "groupId", example: "dkwfnw"})
-            @ApiOperation({ summary: "search a group" })
-            @ApiResponse({
-                status: 200,
-                description: 'Successfully fetched the group',
-            })
-            @ApiResponse({
-            status: 400,
-            description: 'Bad request',
-            })
-            @ApiResponse({
-            status: 500,
-            description: 'Internal server error',
-            })
-            @ApiResponse({
-            status: 404,
-            description: "Group doesn't exist",
-            })
-            async getOne(@Param("groupId") groupId: string):Promise<Group>{
-                const groupDetails = await this.GroupsService.getOneGroup(groupId);
+  @Get(':groupId')
+  @HttpCode(HttpStatus.OK)
+  @ApiParam({ name: 'groupId', example: 'dkwfnw' })
+  @apiResponseGenerator({
+    operation: 'search a group',
+    httpCode: HttpStatus.OK,
+    responses: [
+      {
+        status: 200,
+        description: 'Successfully fetched the group',
+      },
+      {
+        status: 400,
+        description: 'Bad request',
+      },
+      {
+        status: 500,
+        description: 'Internal server error',
+      },
+      {
+        status: 404,
+        description: "Group doesn't exist",
+      },
+    ],
+  })
+  async getOne(@Param('groupId') groupId: string): Promise<Group> {
+    const groupDetails = await this.GroupsService.getOneGroup(groupId);
 
-                return groupDetails;
-            }
+    return groupDetails;
+  }
 
-        @Patch(":groupId")
-        @HttpCode(HttpStatus.OK)
-        @ApiParam({name: "groupId", example: "dkwfnw"})
-            @ApiOperation({ summary: "Update group settings name/type" })
-            @ApiResponse({
-                status: 200,
-                description: 'Successfully updated',
-            })
-            @ApiResponse({
-            status: 400,
-            description: 'Bad request',
-            })
-            @ApiResponse({
-            status: 500,
-            description: 'Internal server error',
-            })
-            @ApiResponse({
-            status: 404,
-            description: "Group doesn't exist",
-            })
-            async update(@Param("groupId") groupId: string, @Body() groupDetail: UpdateGroupDto):Promise<Group>{
-                const groupDetails = await this.GroupsService.updateGroupSettings(groupId, groupDetail.groupName!, groupDetail.groupType! as groupType);
+  @Patch(':groupId')
+  @HttpCode(HttpStatus.OK)
+  @ApiParam({ name: 'groupId', example: 'dkwfnw' })
+  @apiResponseGenerator({
+    operation: 'Update group settings name/type',
+    httpCode: HttpStatus.OK,
+    responses: [
+      {
+        status: 200,
+        description: 'Successfully updated',
+      },
+      {
+        status: 400,
+        description: 'Bad request',
+      },
+      {
+        status: 500,
+        description: 'Internal server error',
+      },
+      {
+        status: 404,
+        description: "Group doesn't exist",
+      },
+    ],
+  })
+  async update(
+    @Param('groupId') groupId: string,
+    @Body() groupDetail: UpdateGroupDto,
+  ): Promise<Group> {
+    const groupDetails = await this.GroupsService.updateGroupSettings(
+      groupId,
+      groupDetail.groupName!,
+      groupDetail.groupType! as groupType,
+    );
 
-                return groupDetails;
-            }
+    return groupDetails;
+  }
 
-        @Patch("/deactivate/:groupId")
-        @HttpCode(HttpStatus.OK)
-        @ApiParam({name: "groupId", example: "dkbjhvj"})
-            @ApiOperation({ summary: "Deactivate group" })
-            @ApiResponse({
-                status: 200,
-                description: 'Successfully deactivated',
-            })
-            @ApiResponse({
-            status: 400,
-            description: 'Bad request',
-            })
-            @ApiResponse({
-            status: 500,
-            description: 'Internal server error',
-            })
-            @ApiResponse({
-            status: 404,
-            description: "Group doesn't exist",
-            })
-            @ApiResponse({
-            status: 409,
-            description: "Account already deactivated!",
-            })
-            async deactivate(@Param("groupId") groupId: string):Promise<Group>{
-                const groupDetails = await this.GroupsService.deactivateGroup(groupId);
+  @Patch('/deactivate/:groupId')
+  @HttpCode(HttpStatus.OK)
+  @ApiParam({ name: 'groupId', example: 'dkbjhvj' })
+  @apiResponseGenerator({
+    operation: 'Deactivate group',
+    httpCode: HttpStatus.OK,
+    responses: [
+      {
+        status: 200,
+        description: 'Successfully deactivated',
+      },
+      {
+        status: 400,
+        description: 'Bad request',
+      },
+      {
+        status: 500,
+        description: 'Internal server error',
+      },
+      {
+        status: 404,
+        description: "Group doesn't exist",
+      },
+      {
+        status: 409,
+        description: 'Account already deactivated!',
+      },
+    ],
+  })
+  async deactivate(@Param('groupId') groupId: string): Promise<Group> {
+    const groupDetails = await this.GroupsService.deactivateGroup(groupId);
 
-                return groupDetails;
-            }
-            
-        @Patch("/reactivate/:groupId")
-        @HttpCode(HttpStatus.OK)
-        @ApiParam({name: "groupId", example: "ytjkbcj"})
-            @ApiOperation({ summary: "Reactivate group" })
-            @ApiResponse({
-                status: 200,
-                description: 'Successfully reactivated',
-            })
-            @ApiResponse({
-            status: 400,
-            description: 'Bad request',
-            })
-            @ApiResponse({
-            status: 500,
-            description: 'Internal server error',
-            })
-            @ApiResponse({
-            status: 404,
-            description: "Group doesn't exist",
-            })
-            @ApiResponse({
-            status: 409,
-            description: "Account already active!",
-            })
-            async reactivate(@Param("groupId") groupId: string):Promise<Group>{
-                const groupDetails = await this.GroupsService.reactivateGroup(groupId);
+    return groupDetails;
+  }
 
-                return groupDetails;
-            }
+  @Patch('/reactivate/:groupId')
+  @ApiParam({ name: 'groupId', example: 'ytjkbcj' })
+  @apiResponseGenerator({
+    operation: 'Reactivate group',
+    httpCode: HttpStatus.OK,
+    responses: [
+      {
+        status: 200,
+        description: 'Successfully reactivated',
+      },
+      {
+        status: 400,
+        description: 'Bad request',
+      },
+      {
+        status: 500,
+        description: 'Internal server error',
+      },
+      {
+        status: 404,
+        description: "Group doesn't exist",
+      },
+      {
+        status: 409,
+        description: 'Account already active!',
+      },
+    ],
+  })
+  async reactivate(@Param('groupId') groupId: string): Promise<Group> {
+    const groupDetails = await this.GroupsService.reactivateGroup(groupId);
 
-        @Post("/:groupId/members")
-        @HttpCode(HttpStatus.OK)
-        @ApiParam({name: "groupId", example: "ytjkbcj"})
-            @ApiOperation({ summary: "Add members to group" })
-            @ApiResponse({
-                status: 200,
-                description: 'Successfully added members to the group',
-            })
-            @ApiResponse({
-            status: 400,
-            description: 'Bad request',
-            })
-            @ApiResponse({
-            status: 500,
-            description: 'Internal server error',
-            })
-            @ApiResponse({
-            status: 404,
-            description: "Group not found",
-            })
-            async addMember(@Param("groupId") groupId: string , @Body() memberIds: addMemberDto){
-                await this.GroupsService.addMember(groupId, memberIds.memberIds);
+    return groupDetails;
+  }
 
-            }
+  @Post('/:groupId/members')
+  @ApiParam({ name: 'groupId', example: 'ytjkbcj' })
+  @apiResponseGenerator({
+    operation: 'Add members to group',
+    httpCode: HttpStatus.OK,
+    responses: [
+      {
+        status: 200,
+        description: 'Successfully added members to the group',
+      },
+      {
+        status: 400,
+        description: 'Bad request',
+      },
+      {
+        status: 500,
+        description: 'Internal server error',
+      },
+      {
+        status: 404,
+        description: 'Group not found',
+      },
+    ],
+  })
+  async addMember(
+    @Param('groupId') groupId: string,
+    @Body() memberIds: addMemberDto,
+  ) {
+    await this.GroupsService.addMember(groupId, memberIds.memberIds);
+  }
 
-        @Post("/:groupId/:memberId/leave")
-        @HttpCode(HttpStatus.OK)
-        @ApiParam({name: "groupId", example: "ytjkbcj"})
-        @ApiParam({name: "memberId", example: "fvmkev"})
-            @ApiOperation({ summary: "Leave a group" })
-            @ApiResponse({
-                status: 200,
-                description: 'Successfully left the group',
-            })
-            @ApiResponse({
-            status: 400,
-            description: 'Bad request',
-            })
-            @ApiResponse({
-            status: 500,
-            description: 'Internal server error',
-            })
-            @ApiResponse({
-            status: 404,
-            description: "This user is not the member of this group",
-            })
-            async leaveGroup(@Param("groupId") groupId: string , @Param("memberId") memberId: string){
-                await this.GroupsService.leaveGroup(groupId, memberId);
-            }  
-        
-        @Delete("/:groupId/:adminId/:memberId/remove")
-        @HttpCode(HttpStatus.OK)
-        @ApiParam({name: "groupId", example: "ytjkbcj"})
-        @ApiParam({name: "memberId", example: "fvmkev"})
-        @ApiParam({name: "adminId", example: "cjncke"})
-            @ApiOperation({ summary: "Leave a group" })
-            @ApiResponse({
-                status: 200,
-                description: 'Successfully removed from the group',
-            })
-            @ApiResponse({
-            status: 400,
-            description: 'Bad request',
-            })
-            @ApiResponse({
-            status: 500,
-            description: 'Internal server error',
-            })
-            @ApiResponse({
-            status: 404,
-            description: "User not the member of this group",
-            })
-            @ApiResponse({
-            status: 404,
-            description: "Group Admin  or the Group doesn't exist",
-            })
-            async removeMember(@Param("groupId") groupId: string ,@Param("adminId") adminId: string, @Param("memberId") memberId: string){
-                await this.GroupsService.removeMember(groupId, adminId, memberId);
-            }    
+  @Post('/:groupId/:memberId/leave')
+  @ApiParam({ name: 'groupId', example: 'ytjkbcj' })
+  @ApiParam({ name: 'memberId', example: 'fvmkev' })
+  @apiResponseGenerator({
+    operation: 'Send a friend request',
+    httpCode: HttpStatus.OK,
+    responses: [
+      {
+        status: 200,
+        description: 'Successfully left the group',
+      },
+      {
+        status: 400,
+        description: 'Bad request',
+      },
+      {
+        status: 500,
+        description: 'Internal server error',
+      },
+      {
+        status: 404,
+        description: 'This user is not the member of this group',
+      },
+    ],
+  })
+  async leaveGroup(
+    @Param('groupId') groupId: string,
+    @Param('memberId') memberId: string,
+  ) {
+    await this.GroupsService.leaveGroup(groupId, memberId);
+  }
 
+  @Delete('/:groupId/:adminId/:memberId/remove')
+  @ApiParam({ name: 'groupId', example: 'ytjkbcj' })
+  @ApiParam({ name: 'memberId', example: 'fvmkev' })
+  @ApiParam({ name: 'adminId', example: 'cjncke' })
+  @apiResponseGenerator({
+    operation: 'Leave a group',
+    httpCode: HttpStatus.OK,
+    responses: [
+      {
+        status: 200,
+        description: 'Successfully removed from the group',
+      },
+      {
+        status: 400,
+        description: 'Bad request',
+      },
+      {
+        status: 500,
+        description: 'Internal server error',
+      },
+      {
+        status: 404,
+        description: 'User not the member of this group',
+      },
+      {
+        status: 404,
+        description: "Group Admin  or the Group doesn't exist",
+      },
+    ],
+  })
+  async removeMember(
+    @Param('groupId') groupId: string,
+    @Param('adminId') adminId: string,
+    @Param('memberId') memberId: string,
+  ) {
+    await this.GroupsService.removeMember(groupId, adminId, memberId);
+  }
 }
+
