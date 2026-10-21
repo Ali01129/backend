@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 import {
   IsIn,
   IsNotEmpty,
@@ -6,25 +6,21 @@ import {
   IsPositive,
   IsString,
   Length,
-} from "class-validator";
-import { splitMethods } from "../types/splitMethod.types";
-
-// export const SPLIT_METHODS = ["equal", "exact", "percent", "by-items"];
-// export type SplitMethod = (typeof SPLIT_METHODS)[number];  
-
+} from 'class-validator';
+import { splitMethods } from '../types/splitMethod.types';
 
 export class CreateExpenseDto {
-  @ApiProperty({ example: "Dinner at Café" })
+  @ApiProperty({ example: 'Dinner at Café' })
   @IsString()
   @IsNotEmpty()
   name!: string;
 
-  @ApiProperty({ example: "PKR" })
+  @ApiProperty({ example: 'PKR' })
   @IsString()
   @Length(3, 3)
   currency!: string;
 
-  @ApiProperty({ example: "userId6" })
+  @ApiProperty({ example: 'userId6' })
   @IsString()
   @IsNotEmpty()
   paidBy!: string;
@@ -34,11 +30,11 @@ export class CreateExpenseDto {
   @IsPositive()
   amount!: number;
 
-  @ApiProperty({ example: "equal" })
+  @ApiProperty({ example: 'equal' })
   @IsIn(Object.values(splitMethods))
   splitMethod!: splitMethods;
 
-  @ApiProperty({example: "user8"})
+  @ApiProperty({ example: 'user8' })
   @IsNotEmpty()
   @IsString()
   createdBy!: string;

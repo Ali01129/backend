@@ -1,5 +1,4 @@
-
-export interface ExpenseItemMember{
-    expenseItemId: string;
-    userId: string;
+export interface ExpenseItemMember {
+  expenseItemId: string;
+  userId: string;
 }
