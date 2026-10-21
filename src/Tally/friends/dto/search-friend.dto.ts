@@ -17,3 +17,4 @@ export class SearchFriendDto {
     @IsString()
     handle?: string;
 }
+

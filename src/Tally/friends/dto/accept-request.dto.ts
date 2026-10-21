@@ -12,9 +12,5 @@ export class AcceptRequestDto{
     @IsString()
     @IsNotEmpty()
     sentTo!: string;
-
-    // @ApiProperty({example: "requestId"})
-    // @IsString()
-    // @IsNotEmpty()
-    // friendRequestId!: string;
 }
+

@@ -9,3 +9,4 @@ export interface Friend {
     updatedAt: string | null,
     removedAt: string | null
 }
+

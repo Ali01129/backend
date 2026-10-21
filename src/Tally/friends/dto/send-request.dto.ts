@@ -13,3 +13,4 @@ export class SendRequestDto{
     @IsNotEmpty()
     friendId!: string;
 }
+
