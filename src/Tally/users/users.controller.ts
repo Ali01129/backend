@@ -27,12 +27,7 @@ export class UserController {
   @apiResponseGenerator({
     operation: 'Create a new user',
     httpCode: HttpStatus.OK,
-    responses: [
-      {
-        status: 404,
-        description: 'Id not found',
-      },
-    ],
+    responses: [],
   })
   // here we are going to create a method and give it a suitable name
   // whereas the userSerivce create method will be called inside this method to create a user in the database
@@ -55,10 +50,6 @@ export class UserController {
     operation: 'Search user by ID ,name or email',
     httpCode: HttpStatus.OK,
     responses: [
-      {
-        status: 404,
-        description: 'User not found!',
-      },
       {
         status: 409,
         description: 'Aleast one thing should be provided',
