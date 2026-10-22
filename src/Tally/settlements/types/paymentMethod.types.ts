@@ -1,2 +1,1 @@
-
-export type paymentMethod = "cash" | "paypal" | "bank" | "other";
+export type paymentMethod = 'cash' | 'paypal' | 'bank' | 'other';
