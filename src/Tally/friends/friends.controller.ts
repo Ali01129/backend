@@ -6,7 +6,7 @@ import {
   HttpStatus,
   Param,
   Post,
-  Query
+  Query,
 } from '@nestjs/common';
 import { ApiParam, ApiQuery } from '@nestjs/swagger';
 import { CreateUserResponseDto } from '../users/dto/create-user-response.dto';
