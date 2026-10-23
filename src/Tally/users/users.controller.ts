@@ -27,25 +27,7 @@ export class UserController {
   @apiResponseGenerator({
     operation: 'Create a new user',
     httpCode: HttpStatus.OK,
-    responses: [
-      {
-        status: 200,
-        description: 'User created successfully',
-        type: CreateUserResponseDto,
-      },
-      {
-        status: 400,
-        description: 'Bad request',
-      },
-      {
-        status: 500,
-        description: 'Internal server error',
-      },
-      {
-        status: 404,
-        description: 'Id not found',
-      },
-    ],
+    responses: [],
   })
   // here we are going to create a method and give it a suitable name
   // whereas the userSerivce create method will be called inside this method to create a user in the database
@@ -69,23 +51,6 @@ export class UserController {
     httpCode: HttpStatus.OK,
     responses: [
       {
-        status: 200,
-        description: 'User retrieved successfully',
-        type: CreateUserResponseDto,
-      },
-      {
-        status: 400,
-        description: 'Bad request',
-      },
-      {
-        status: 500,
-        description: 'Internal server error',
-      },
-      {
-        status: 404,
-        description: 'User not found!',
-      },
-      {
         status: 409,
         description: 'Aleast one thing should be provided',
       },
@@ -105,21 +70,7 @@ export class UserController {
   @apiResponseGenerator({
     operation: 'Show users list active/inactive',
     httpCode: HttpStatus.OK,
-    responses: [
-      {
-        status: 200,
-        description: 'Users retrieved successfully',
-        type: [CreateUserResponseDto],
-      },
-      {
-        status: 400,
-        description: 'Bad request',
-      },
-      {
-        status: 500,
-        description: 'Internal server error',
-      },
-    ],
+    responses: []
   })
   async getAllUsers(
     @Param('showDeleted') showDeleted: boolean,
@@ -132,20 +83,7 @@ export class UserController {
   @apiResponseGenerator({
     operation: 'Delete a user',
     httpCode: HttpStatus.OK,
-    responses: [
-      {
-        status: 200,
-        description: 'User deleted successfully',
-      },
-      {
-        status: 404,
-        description: 'User not found',
-      },
-      {
-        status: 500,
-        description: 'Internal server error',
-      },
-    ],
+    responses: [],
   })
   async deleteUserById(@Param('id') id: string): Promise<string> {
     const userId = await this.userService.deleteUserById(id);
@@ -156,21 +94,7 @@ export class UserController {
   @apiResponseGenerator({
     operation: 'Update user info',
     httpCode: HttpStatus.OK,
-    responses: [
-      {
-        status: 200,
-        description: 'User updated successfully',
-        type: UpdateUserDto,
-      },
-      {
-        status: 404,
-        description: 'User not found',
-      },
-      {
-        status: 500,
-        description: 'Internal server error',
-      },
-    ],
+    responses: [],
   })
   async updateUserInfo(
     @Param('id') id: string,

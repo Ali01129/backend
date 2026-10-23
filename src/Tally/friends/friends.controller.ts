@@ -15,7 +15,6 @@ import { User } from '../users/types/create-user.types';
 import { AcceptRequestDto } from './dto/accept-request.dto';
 import { RemoveFriendQureyDto } from './dto/remove-friend.dto';
 import { SearchFriendDto } from './dto/search-friend.dto';
-import { SendRequestResponseDto } from './dto/send-request-response.dto';
 import { SendRequestDto } from './dto/send-request.dto';
 import { FriendsService } from './friends.service';
 import { Friend } from './types/create-friends.types';
@@ -31,19 +30,6 @@ export class FriendsController {
     operation: 'Send a friend request',
     httpCode: HttpStatus.OK,
     responses: [
-      {
-        status: 200,
-        description: 'Request sent successfully',
-        type: SendRequestResponseDto,
-      },
-      {
-        status: 400,
-        description: 'Bad request',
-      },
-      {
-        status: 500,
-        description: 'Internal server error',
-      },
       {
         status: 404,
         description: 'You can not send a Friend Request to yourself',
@@ -79,16 +65,7 @@ export class FriendsController {
   @apiResponseGenerator({
     operation: 'Accept a friend request',
     httpCode: HttpStatus.OK,
-    responses: [
-      {
-        status: 200,
-        description: 'Request acccepted successfully',
-      },
-      {
-        status: 500,
-        description: 'Internal server error',
-      },
-    ],
+    responses: [],
   })
   async acceptRequest(
     @Body() AcceptRequestDto: AcceptRequestDto,
@@ -110,19 +87,7 @@ export class FriendsController {
       {
         status: 201,
         description: 'Declined successfully',
-      },
-      {
-        status: 400,
-        description: 'Bad request',
-      },
-      {
-        status: 500,
-        description: 'Internal server error',
-      },
-      {
-        status: 404,
-        description: "The request doesn't exist",
-      },
+      }
     ],
   })
   async decline(
@@ -145,18 +110,6 @@ export class FriendsController {
         type: [CreateUserResponseDto],
       },
       {
-        status: 400,
-        description: 'Bad request',
-      },
-      {
-        status: 500,
-        description: 'Internal server error',
-      },
-      {
-        status: 404,
-        description: 'User not found',
-      },
-      {
         status: 404,
         description: 'Provide an id, email or handle',
       },
@@ -174,21 +127,9 @@ export class FriendsController {
     httpCode: HttpStatus.OK,
     responses: [
       {
-        status: 200,
-        description: 'Removed friend successfully',
-      },
-      {
         status: 404,
         description: 'Not your friend!',
-      },
-      {
-        status: 400,
-        description: 'Bad request',
-      },
-      {
-        status: 500,
-        description: 'Internal server error',
-      },
+      }
     ],
   })
   async removeFriend(
@@ -208,20 +149,7 @@ export class FriendsController {
   @apiResponseGenerator({
     operation: 'List of friend requests',
     httpCode: HttpStatus.OK,
-    responses: [
-      {
-        status: 200,
-        description: 'Friend request list fetched successfully',
-      },
-      {
-        status: 400,
-        description: 'Bad request',
-      },
-      {
-        status: 500,
-        description: 'Internal server error',
-      },
-    ],
+    responses: [],
   })
   async friendRequestList(
     @Param('userId') userId: string,

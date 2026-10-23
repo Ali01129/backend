@@ -28,20 +28,7 @@ export class ExpenseController {
   @apiResponseGenerator({
     operation: 'Create expense',
     httpCode: HttpStatus.OK,
-    responses: [
-      {
-        status: 200,
-        description: 'Request sent successfully',
-      },
-      {
-        status: 400,
-        description: 'Bad request',
-      },
-      {
-        status: 500,
-        description: 'Internal server error',
-      },
-    ],
+    responses: [],
   })
   async create(
     @Param('groupId') groupId: string,
@@ -66,22 +53,6 @@ export class ExpenseController {
     operation: 'Updated expense',
     httpCode: HttpStatus.OK,
     responses: [
-      {
-        status: 200,
-        description: 'Updated expense successfully',
-      },
-      {
-        status: 400,
-        description: 'Bad request',
-      },
-      {
-        status: 500,
-        description: 'Internal server error',
-      },
-      {
-        status: 404,
-        description: 'Expense not found!',
-      },
       {
         status: 409,
         description: "The expense doesn't belong to this group",
@@ -118,24 +89,8 @@ export class ExpenseController {
     httpCode: HttpStatus.OK,
     responses: [
       {
-        status: 200,
-        description: 'Successfully deleted expense',
-      },
-      {
-        status: 404,
-        description: 'Expense not found!',
-      },
-      {
         status: 409,
         description: "The expense doesn't belong to this group",
-      },
-      {
-        status: 400,
-        description: 'Bad request',
-      },
-      {
-        status: 500,
-        description: 'Internal server error',
       },
     ],
   })
@@ -152,24 +107,7 @@ export class ExpenseController {
   @apiResponseGenerator({
     operation: 'search an expense',
     httpCode: HttpStatus.OK,
-    responses: [
-      {
-        status: 200,
-        description: 'Successfully fetched the expense',
-      },
-      {
-        status: 400,
-        description: 'Bad request',
-      },
-      {
-        status: 500,
-        description: 'Internal server error',
-      },
-      {
-        status: 404,
-        description: 'Expense not found!',
-      },
-    ],
+    responses: [],
   })
   async getOne(@Param('expenseId') expenseId: string): Promise<Expense> {
     const expense = await this.ExpenseService.getOne(expenseId);
@@ -184,18 +122,6 @@ export class ExpenseController {
     operation: 'Get all expenses of a given group',
     httpCode: HttpStatus.OK,
     responses: [
-      {
-        status: 200,
-        description: 'Successfully fetched all the expense',
-      },
-      {
-        status: 400,
-        description: 'Bad request',
-      },
-      {
-        status: 500,
-        description: 'Internal server error',
-      },
       {
         status: 404,
         description: "Group doesn't exist",
