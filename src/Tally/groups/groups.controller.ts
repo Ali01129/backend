@@ -28,20 +28,7 @@ export class GroupsController {
   @apiResponseGenerator({
     operation: 'Create a group',
     httpCode: HttpStatus.OK,
-    responses: [
-      {
-        status: 200,
-        description: 'Group created successfully',
-      },
-      {
-        status: 400,
-        description: 'Bad request',
-      },
-      {
-        status: 500,
-        description: 'Internal server error',
-      },
-    ],
+    responses: [],
   })
   async create(
     @Param('adminId') adminId: string,
@@ -60,24 +47,7 @@ export class GroupsController {
   @apiResponseGenerator({
     operation: 'search a group',
     httpCode: HttpStatus.OK,
-    responses: [
-      {
-        status: 200,
-        description: 'Successfully fetched the group',
-      },
-      {
-        status: 400,
-        description: 'Bad request',
-      },
-      {
-        status: 500,
-        description: 'Internal server error',
-      },
-      {
-        status: 404,
-        description: "Group doesn't exist",
-      },
-    ],
+    responses: [],
   })
   async getOne(@Param('groupId') groupId: string): Promise<Group> {
     const groupDetails = await this.GroupsService.getOneGroup(groupId);
@@ -91,24 +61,7 @@ export class GroupsController {
   @apiResponseGenerator({
     operation: 'Update group settings name/type',
     httpCode: HttpStatus.OK,
-    responses: [
-      {
-        status: 200,
-        description: 'Successfully updated',
-      },
-      {
-        status: 400,
-        description: 'Bad request',
-      },
-      {
-        status: 500,
-        description: 'Internal server error',
-      },
-      {
-        status: 404,
-        description: "Group doesn't exist",
-      },
-    ],
+    responses: [],
   })
   async update(
     @Param('groupId') groupId: string,
@@ -131,22 +84,6 @@ export class GroupsController {
     httpCode: HttpStatus.OK,
     responses: [
       {
-        status: 200,
-        description: 'Successfully deactivated',
-      },
-      {
-        status: 400,
-        description: 'Bad request',
-      },
-      {
-        status: 500,
-        description: 'Internal server error',
-      },
-      {
-        status: 404,
-        description: "Group doesn't exist",
-      },
-      {
         status: 409,
         description: 'Account already deactivated!',
       },
@@ -165,22 +102,6 @@ export class GroupsController {
     httpCode: HttpStatus.OK,
     responses: [
       {
-        status: 200,
-        description: 'Successfully reactivated',
-      },
-      {
-        status: 400,
-        description: 'Bad request',
-      },
-      {
-        status: 500,
-        description: 'Internal server error',
-      },
-      {
-        status: 404,
-        description: "Group doesn't exist",
-      },
-      {
         status: 409,
         description: 'Account already active!',
       },
@@ -198,18 +119,6 @@ export class GroupsController {
     operation: 'Add members to group',
     httpCode: HttpStatus.OK,
     responses: [
-      {
-        status: 200,
-        description: 'Successfully added members to the group',
-      },
-      {
-        status: 400,
-        description: 'Bad request',
-      },
-      {
-        status: 500,
-        description: 'Internal server error',
-      },
       {
         status: 404,
         description: 'Group not found',
@@ -231,18 +140,6 @@ export class GroupsController {
     httpCode: HttpStatus.OK,
     responses: [
       {
-        status: 200,
-        description: 'Successfully left the group',
-      },
-      {
-        status: 400,
-        description: 'Bad request',
-      },
-      {
-        status: 500,
-        description: 'Internal server error',
-      },
-      {
         status: 404,
         description: 'This user is not the member of this group',
       },
@@ -263,18 +160,6 @@ export class GroupsController {
     operation: 'Leave a group',
     httpCode: HttpStatus.OK,
     responses: [
-      {
-        status: 200,
-        description: 'Successfully removed from the group',
-      },
-      {
-        status: 400,
-        description: 'Bad request',
-      },
-      {
-        status: 500,
-        description: 'Internal server error',
-      },
       {
         status: 404,
         description: 'User not the member of this group',
