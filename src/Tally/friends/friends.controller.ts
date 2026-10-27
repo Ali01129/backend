@@ -20,6 +20,7 @@ import { FriendsService } from './friends.service';
 import { Friend } from './types/create-friends.types';
 import { declineRequest } from './types/decline-friend-request.types';
 import { friendRequest } from './types/friend-request-direction.types';
+import { acceptFriendRequest } from './types/accept-friend-request.types';
 
 @Controller('/friends')
 export class FriendsController {
@@ -65,12 +66,29 @@ export class FriendsController {
   @apiResponseGenerator({
     operation: 'Accept a friend request',
     httpCode: HttpStatus.OK,
-    responses: [],
+    responses: [
+      {
+        status: 404,
+        description: "sender Id is wrong",
+      },
+      {
+        status: 404,
+        description: "Reciever Id is wrong",
+      },
+      {
+        status: 409,
+        description: 'Aleady a friend',
+      },
+      {
+        status: 409,
+        description: 'Friend Request was declined',
+      },
+    ],
   })
   async acceptRequest(
     @Body() AcceptRequestDto: AcceptRequestDto,
     @Param('requestId') requestId: string,
-  ): Promise<Pick<Friend, 'id' | 'createdAt' | 'updatedAt' | 'status'>> {
+  ): Promise<acceptFriendRequest> {
     const acceptedRequest = await this.FirendsService.acceptFriendRequest(
       AcceptRequestDto.sentBy,
       AcceptRequestDto.sentTo,
@@ -87,6 +105,10 @@ export class FriendsController {
       {
         status: 201,
         description: 'Declined successfully',
+      },
+      {
+        status: 409,
+        description: 'This request was already declined.'
       }
     ],
   })
