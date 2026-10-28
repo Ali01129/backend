@@ -1,6 +1,6 @@
 import { Firestore } from "firebase-admin/firestore";
 import { FIRESTORE } from "../Firebase/firebase.module";
-import { Inject, ConflictException, NotFoundException } from "@nestjs/common";
+import { Inject, ConflictException, NotFoundException, ForbiddenException } from "@nestjs/common";
 import {Group} from "../groups/types/create-group.types";
 import { GroupMember } from "../groups/types/create-group-member.types";
 import type { groupType } from "../groups/types/create-group.types";
@@ -220,14 +220,14 @@ export class GroupsService{
         const ref = groupAdminSnap.data() as GroupMember;
 
         if(ref.role !== "admin"){
-            return
+            throw new ForbiddenException("Only admin can perform this operation");
         }
 
         if(!groupMemberSnap.exists){
             throw new NotFoundException("User not the member of this group")
         }
 
-        groupMemberDoc.delete();
+        await groupMemberDoc.delete();
 
     }
 }

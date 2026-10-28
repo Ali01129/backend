@@ -33,8 +33,8 @@ export class GroupsController {
   async create(
     @Param('adminId') adminId: string,
     @Body() group: CreateGroupDto,
-  ) {
-    const g = await this.GroupsService.create(
+  ):Promise<Group> {
+    return  await this.GroupsService.create(
       adminId,
       group.groupName,
       group.groupType as groupType,
@@ -168,6 +168,10 @@ export class GroupsController {
         status: 404,
         description: "Group Admin  or the Group doesn't exist",
       },
+      {
+        status: 403,
+        description: "Only admin can perform this operation"
+      }
     ],
   })
   async removeMember(

@@ -1,6 +1,6 @@
 export interface GroupMember{
     groupId: string;
-    userId: string;
+    memberId: string;
     role: "admin" | "member";
     joinedAt: string;
 }
